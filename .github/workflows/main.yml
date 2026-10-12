@@ -17,9 +17,9 @@ jobs:
       - uses: actions/checkout@v7
       - name: tree current files
         run: |
-          echo "::group"
+          echo "::group::tree"
           tree
-          echo "::endgroup"
+          echo "::endgroup::"
       - name: Run a one-line script
         run: echo Hello, world!
       - name: Run a multi-line script
