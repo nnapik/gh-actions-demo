@@ -45,6 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.event.inputs.environment == 'Dev'
     needs: [ build, test ] 
+    environment: Dev
     steps:
       - name: debug
         run: |
@@ -57,6 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref_name == 'main' || github.event.inputs.environment == 'Test'
     needs: [ build, test ] 
+    environment: Test
     steps:
       - name: debug
         run: |
@@ -69,6 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.environment == 'Prod'
     needs: [ build, test ] 
+    environment: Prod
     steps:
       - name: debug
         run: |
