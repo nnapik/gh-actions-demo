@@ -1,0 +1,32 @@
+
+
+name: first test wf
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 5'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: echo Hello, world!
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: debug
+        run: |
+          echo "${{github.action_repository}} triggered by ${{github.event_name}}"
+          echo "branch: ${{github.ref}}\t${{github.ref_name}}"
+      - name: Deploy to VM
+        run: echo Deployed
