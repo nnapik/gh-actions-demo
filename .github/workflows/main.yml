@@ -7,6 +7,11 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "env to deploy to"
+        type: environment
+        required: true
   schedule:
     - cron: '0 3 * * 5'
 
@@ -26,21 +31,48 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+      - name: Build docker image and push
+        run: echo 'Building docker image...done!'
           
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - name: run tests
-        run: echo test passed 0/0
+        run: echo test passed 42/42
         
-  deploy:
+  deploy-dev:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.environment == 'Dev'
     needs: [ build, test ] 
     steps:
       - name: debug
         run: |
           echo "${{github.action_repository}} triggered by ${{github.event_name}}"
           echo "branch: ${{github.ref}}\t${{github.ref_name}}"
-      - name: Deploy to VM
-        run: echo Deployed
+      - name: Deploy to dev cluster
+        run: echo Deployed Dev
+        
+  deploy-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_name == 'main' || github.event.inputs.environment == 'Test'
+    needs: [ build, test ] 
+    steps:
+      - name: debug
+        run: |
+          echo "${{github.action_repository}} triggered by ${{github.event_name}}"
+          echo "branch: ${{github.ref}}\t${{github.ref_name}}"
+      - name: Deploy to test cluster
+        run: echo Deployed Test
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.environment == 'Prod'
+    needs: [ build, test ] 
+    steps:
+      - name: debug
+        run: |
+          echo "${{github.action_repository}} triggered by ${{github.event_name}}"
+          echo "branch: ${{github.ref}}\t${{github.ref_name}}"
+      - name: Deploy to cluster
+        run: echo Deployed Prod
